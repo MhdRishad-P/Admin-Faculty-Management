@@ -1,9 +1,7 @@
-package com.example.AdminFaculty.repository;
-
+package com.example.AdminFaculty.repository;// FacultyRepository.java
 import com.example.AdminFaculty.model.Faculty;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.Optional;
 
 public interface FacultyRepository extends JpaRepository<Faculty, Long> {
-    Optional<Faculty> findByNameAndPassword(String name, String password);
+    // standard CRUD is enough
 }

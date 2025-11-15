@@ -1,57 +1,22 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import AdminDashboard from "./pages/AdminDashboard";
-import FacultyManagement from "./pages/FacultyManagement";
-import ClassProposal from "./pages/ClassProposal";
-import FacultyDashboard from "./pages/FacultyDashboard";
-import CommonLogin from "./pages/CommonLogin";
-import ProtectedRoute from "./pages/ProtectedRoute";
+// frontend/src/App.jsx
+import React from 'react';
+import FacultyManagement from './components/FacultyManagement';
+import Matching from './components/Matching';
 
-function App() {
-  const isAdmin = localStorage.getItem("isAdminLoggedIn") === "true";
-  const isFaculty = localStorage.getItem("isFacultyLoggedIn") === "true";
-
+export default function App(){
   return (
-  
-      <Routes>
-         {/* 🔓 Common login */}
-        <Route path="/" element={<CommonLogin />} />
-
-        {/* 🔒 Admin-only pages */}
-        <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedRoute role="admin">
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/manage-faculty"
-          element={
-            <ProtectedRoute role="admin">
-              <FacultyManagement />
-            </ProtectedRoute>
-          }
-        />
-
-                <Route path="/admin/faculties" element={isAdmin ? <FacultyManagement /> : <Navigate to="/" replace />} />
-        <Route path="/admin/proposals" element={isAdmin ? <ClassProposal /> : <Navigate to="/" replace />} />
-
-        {/* 🔒 Faculty-only pages */}
-        <Route
-          path="/faculty/dashboard"
-          element={
-            <ProtectedRoute role="faculty">
-              <FacultyDashboard />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-        
-          
-  
-  );
+    <div className="min-h-screen bg-gray-50 p-6">
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold">Faculty Admin Dashboard</h1>
+      </header>
+      <main className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="col-span-1">
+          <FacultyManagement />
+        </div>
+        <div className="col-span-1">
+          <Matching />
+        </div>
+      </main>
+    </div>
+  )
 }
-
-export default App;

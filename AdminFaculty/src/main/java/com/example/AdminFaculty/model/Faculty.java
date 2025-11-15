@@ -1,64 +1,89 @@
-package com.example.AdminFaculty.model;
+package com.example.AdminFaculty.model;// backend/src/main/java/com/example/facultymgmt/model/Faculty.java
+
 
 import jakarta.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name = "faculties")
 public class Faculty {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String teachingClasses;
-    private String teachingSubjects;
-    private String whatsappNumber;
-    private String syllabus;
+    private String fullName;
+    private String whatsappNumber; // store in international format, e.g. +919876543210
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "faculty_rank") // avoid using reserved keyword 'rank'
-    private Rank rank;
+    // store JSON arrays in MySQL JSON columns
+    @Column(columnDefinition = "json")
+    private String subjectsJson; // JSON array of strings
 
-    private String password;
-    private String authToken;
+    @Column(columnDefinition = "json")
+    private String languageSkillsJson;
 
-    public Faculty() {}
+    @Column(columnDefinition = "json")
+    private String teachingGradesJson; // e.g. ["grade1","grade2"]
 
-    public Faculty(String name,String password,String teachingClasses,String teachingSubjects,String whatsappNumber,String syllabus,String authToken,Rank rank){
-        this.name=name;
-        this.password=password;
-        this.syllabus=syllabus;
-        this.whatsappNumber=whatsappNumber;
-        this.teachingClasses=teachingClasses;
-        this.teachingSubjects=teachingSubjects;
-        this.rank=rank;
+    @Column(columnDefinition = "json")
+    private String availableHoursJson; // e.g. [{ "from": "14:00", "to": "18:00" }]
+
+    // getters / setters
+    // convenience methods to convert JSON <-> List can be in service/DTO layer
+    // ...
+
+
+    public Long getId() {
+        return id;
     }
 
-    // getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getFullName() {
+        return fullName;
+    }
 
-    public String getTeachingClasses() { return teachingClasses; }
-    public void setTeachingClasses(String teachingClasses) { this.teachingClasses = teachingClasses; }
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
-    public String getTeachingSubjects() { return teachingSubjects; }
-    public void setTeachingSubjects(String teachingSubjects) { this.teachingSubjects = teachingSubjects; }
+    public String getWhatsappNumber() {
+        return whatsappNumber;
+    }
 
-    public Rank getRank() { return rank; }
-    public void setRank(Rank rank) { this.rank = rank; }
+    public void setWhatsappNumber(String whatsappNumber) {
+        this.whatsappNumber = whatsappNumber;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getSubjectsJson() {
+        return subjectsJson;
+    }
 
-    public String getAuthToken() { return authToken; }
-    public void setAuthToken(String authToken) { this.authToken = authToken; }
+    public void setSubjectsJson(String subjectsJson) {
+        this.subjectsJson = subjectsJson;
+    }
 
-    public String getWhatsappNumber(){return whatsappNumber;}
-    public void setWhatsappNumber(String whatsappNumber){this.whatsappNumber=whatsappNumber;}
+    public String getLanguageSkillsJson() {
+        return languageSkillsJson;
+    }
 
-    public String getSyllabus(){return syllabus;}
-    public void setSyllabus(String syllabus){this.syllabus=syllabus;}
+    public void setLanguageSkillsJson(String languageSkillsJson) {
+        this.languageSkillsJson = languageSkillsJson;
+    }
+
+    public String getTeachingGradesJson() {
+        return teachingGradesJson;
+    }
+
+    public void setTeachingGradesJson(String teachingGradesJson) {
+        this.teachingGradesJson = teachingGradesJson;
+    }
+
+    public String getAvailableHoursJson() {
+        return availableHoursJson;
+    }
+
+    public void setAvailableHoursJson(String availableHoursJson) {
+        this.availableHoursJson = availableHoursJson;
+    }
 }
