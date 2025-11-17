@@ -1,65 +1,228 @@
 // frontend/src/components/FacultyForm.jsx
-import React, {useState, useEffect} from 'react';
+import React, { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
 
-export default function FacultyForm({initial, onSave, onCancel}){
-  const [state, setState] = useState({
-    id: null, fullName: '', whatsappNumber: '',
-    subjects: [], languageSkills: [], teachingGrades: [],
-    availableHours: []
+export default function FacultyForm({ initial, onSave, onCancel }) {
+  
+  const SUBJECT_OPTIONS = [
+    "Maths", "Chemistry", "Biolagy", "Physics", "Social Science",
+    "Malayalam", "English", "Arabic", "Hindi", "French",
+    "Accountancy", "Economics", "Business Studies", "Science"
+  ];
+
+  const LECTURING_LANG_OPTIONS = [
+    "Malayalam", "English", "Hindi", "Arabic",
+    "Malayalam+English", "Hindi+English", "Malayalam+Hindi"
+  ];
+
+  const GRADE_OPTIONS = [
+    "LKG","UKG","1st","2nd","3rd","4th","5th","6th",
+    "7th","8th","9th","10th","+1","+2"
+  ];
+
+  const [data, setData] = useState({
+    id: null,
+    fullName: "",
+    whatsappNumber: "",
+    subjects: [],
+    lecturingLanguage: [],
+    teachingGrades: [],
+    availableHours: [],
   });
 
-  useEffect(()=> {
-    if (initial) setState({
-      ...initial,
-      subjects: initial.subjects || [],
-      languageSkills: initial.languageSkills || [],
-      teachingGrades: initial.teachingGrades || [],
-      availableHours: initial.availableHours || []
-    });
+  const [openSubjects, setOpenSubjects] = useState(false);
+  const [openLecturingLang, setOpenLecturingLang] = useState(false);
+  const [openGrades, setOpenGrades] = useState(false);
+
+  useEffect(() => {
+    if (initial) setData(initial);
   }, [initial]);
 
-  const handleSubmit = (e) => {
+  const toggleSelected = (key, value) => {
+    const arr = [...data[key]];
+    if (arr.includes(value)) arr.splice(arr.indexOf(value), 1);
+    else arr.push(value);
+    setData({ ...data, [key]: arr });
+  };
+
+  const submit = (e) => {
     e.preventDefault();
-    onSave(state);
+    onSave(data);
   };
 
   const addSlot = () => {
-    setState(s => ({...s, availableHours: [...s.availableHours, {from:'09:00', to:'11:00'}]}));
-  };
-
-  const updateSlot = (i, k, v) => {
-    const slots = [...state.availableHours]; slots[i][k]=v; setState({...state, availableHours: slots});
+    setData({
+      ...data,
+      availableHours: [...data.availableHours, { from: "09:00", to: "10:00" }],
+    });
   };
 
   return (
-    <form className="mb-4" onSubmit={handleSubmit}>
-      <input value={state.fullName} onChange={e=>setState({...state, fullName:e.target.value})}
-             className="border p-2 w-full mb-2" placeholder="Full name" required />
-      <input value={state.whatsappNumber} onChange={e=>setState({...state, whatsappNumber:e.target.value})}
-             className="border p-2 w-full mb-2" placeholder="+919876543210" required />
-      <input value={(state.subjects||[]).join(',')} onChange={e=>setState({...state, subjects: e.target.value.split(',').map(s=>s.trim())})}
-             className="border p-2 w-full mb-2" placeholder="Subjects (comma separated)" />
-      <input value={(state.languageSkills||[]).join(',')} onChange={e=>setState({...state, languageSkills: e.target.value.split(',').map(s=>s.trim())})}
-             className="border p-2 w-full mb-2" placeholder="Languages (comma separated)" />
-      <input value={(state.teachingGrades||[]).join(',')} onChange={e=>setState({...state, teachingGrades: e.target.value.split(',').map(s=>s.trim())})}
-             className="border p-2 w-full mb-2" placeholder="Grades (comma separated)" />
+    <form
+      className="bg-gray-50 p-5 border rounded-xl mb-5 shadow-sm"
+      onSubmit={submit}
+    >
+      {/* FULL NAME */}
+      <input
+        className="border p-2 rounded w-full mb-3"
+        placeholder="Full Name"
+        value={data.fullName}
+        required
+        onChange={(e) => setData({ ...data, fullName: e.target.value })}
+      />
 
-      <div className="mb-2">
-        <label className="font-semibold">Available Time Slots</label>
-        {(state.availableHours||[]).map((slot,i)=>(
-          <div key={i} className="flex space-x-2 items-center mt-1">
-            <input type="time" value={slot.from} onChange={e=>updateSlot(i,'from',e.target.value)} className="border p-1"/>
-            <span>—</span>
-            <input type="time" value={slot.to} onChange={e=>updateSlot(i,'to',e.target.value)} className="border p-1"/>
+      {/* WHATSAPP NUMBER */}
+      <input
+        className="border p-2 rounded w-full mb-3"
+        placeholder="WhatsApp Number"
+        value={data.whatsappNumber}
+        required
+        onChange={(e) => setData({ ...data, whatsappNumber: e.target.value })}
+      />
+
+      {/* SUBJECTS MULTI SELECT */}
+      <div className="mb-3">
+        <label className="font-medium">Subjects</label>
+
+        <div
+          className="border p-2 w-full rounded bg-white flex justify-between cursor-pointer"
+          onClick={() => setOpenSubjects(!openSubjects)}
+        >
+          <span>
+            {data.subjects.length > 0 ? data.subjects.join(", ") : "Select Subjects"}
+          </span>
+          <ChevronDown size={18} />
+        </div>
+
+        {openSubjects && (
+          <div className="border rounded mt-1 bg-white shadow-md max-h-40 overflow-y-auto">
+            {SUBJECT_OPTIONS.map((sub) => (
+              <div
+                key={sub}
+                className={`p-2 cursor-pointer hover:bg-gray-100 ${
+                  data.subjects.includes(sub) ? "bg-blue-100" : ""
+                }`}
+                onClick={() => toggleSelected("subjects", sub)}
+              >
+                {sub}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* LECTURING LANGUAGE MULTI SELECT */}
+      <div className="mb-3">
+        <label className="font-medium">Lecturing Language</label>
+
+        <div
+          className="border p-2 w-full rounded bg-white flex justify-between cursor-pointer"
+          onClick={() => setOpenLecturingLang(!openLecturingLang)}
+        >
+          <span>
+            {data.lecturingLanguage.length > 0
+              ? data.lecturingLanguage.join(", ")
+              : "Select Lecturing Languages"}
+          </span>
+          <ChevronDown size={18} />
+        </div>
+
+        {openLecturingLang && (
+          <div className="border rounded mt-1 bg-white shadow-md max-h-40 overflow-y-auto">
+            {LECTURING_LANG_OPTIONS.map((lang) => (
+              <div
+                key={lang}
+                className={`p-2 cursor-pointer hover:bg-gray-100 ${
+                  data.lecturingLanguage.includes(lang) ? "bg-purple-100" : ""
+                }`}
+                onClick={() => toggleSelected("lecturingLanguage", lang)}
+              >
+                {lang}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* TEACHING GRADES MULTI SELECT */}
+      <div className="mb-3">
+        <label className="font-medium">Teaching Grades</label>
+
+        <div
+          className="border p-2 w-full rounded bg-white flex justify-between cursor-pointer"
+          onClick={() => setOpenGrades(!openGrades)}
+        >
+          <span>
+            {data.teachingGrades.length > 0
+              ? data.teachingGrades.join(", ")
+              : "Select Grades"}
+          </span>
+          <ChevronDown size={18} />
+        </div>
+
+        {openGrades && (
+          <div className="border rounded mt-1 bg-white shadow-md max-h-40 overflow-y-auto">
+            {GRADE_OPTIONS.map((grade) => (
+              <div
+                key={grade}
+                className={`p-2 cursor-pointer hover:bg-gray-100 ${
+                  data.teachingGrades.includes(grade) ? "bg-orange-100" : ""
+                }`}
+                onClick={() => toggleSelected("teachingGrades", grade)}
+              >
+                {grade}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* AVAILABLE TIME SLOTS */}
+      <div className="mb-3">
+        <label className="font-medium">Available Time Slots</label>
+
+        {data.availableHours.map((slot, i) => (
+          <div key={i} className="flex gap-2 mt-2">
+            <input
+              type="time"
+              className="border p-2 rounded"
+              value={slot.from}
+              onChange={(e) => {
+                const arr = [...data.availableHours];
+                arr[i].from = e.target.value;
+                setData({ ...data, availableHours: arr });
+              }}
+            />
+            <input
+              type="time"
+              className="border p-2 rounded"
+              value={slot.to}
+              onChange={(e) => {
+                const arr = [...data.availableHours];
+                arr[i].to = e.target.value;
+                setData({ ...data, availableHours: arr });
+              }}
+            />
           </div>
         ))}
-        <button type="button" onClick={addSlot} className="mt-2 text-sm text-blue-600">+ Add slot</button>
+
+        <button
+          type="button"
+          onClick={addSlot}
+          className="text-blue-600 text-sm mt-2"
+        >
+          + Add Slot
+        </button>
       </div>
 
-      <div className="flex space-x-2">
-        <button type="submit" className="bg-green-600 text-white px-3 py-1 rounded">Save</button>
-        <button type="button" onClick={onCancel} className="px-3 py-1 border rounded">Cancel</button>
+      {/* ACTION BUTTONS */}
+      <div className="flex gap-3 mt-3">
+        <button className="bg-green-600 text-white px-4 py-2 rounded">Save</button>
+        <button type="button" onClick={onCancel} className="bg-gray-300 px-4 py-2 rounded">
+          Cancel
+        </button>
       </div>
+
     </form>
   );
 }
